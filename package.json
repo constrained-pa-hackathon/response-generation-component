@@ -1,0 +1,23 @@
+{
+  "name": "AvionicsSimulation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node_modules/.bin/mocha tests/**"
+  },
+  "keywords": [
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "jade": "^1.9.2"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4",
+    "should": "^6.0.1"
+  }
+}
