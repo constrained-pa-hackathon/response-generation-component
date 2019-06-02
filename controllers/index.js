@@ -2,7 +2,7 @@ var express = require('express')
   , router = express.Router()
 Ownship = require('../models/ownship')
 Wingmans = require('../models/wingmans')
-Festival = require('../models/festival')
+Festival = require('../helpers/festival')
 
 var fs = require("fs");
 
@@ -49,13 +49,12 @@ router.get('/', function (req, res) {
 router.post('/set/frequency', function (req, res) {
 
   Ownship.set_freq(req.query.freq, function (err, freq) {
-    if (err != null) {
-      res.status(503).send({})
-      // TODO: Prepare response error
-
+    if (err == null) {
+      response_tts_file(res, `Frequency was set to ${freq}.`)
+    } else if (err == "invalid frequency") {
+      response_tts_file(res, `Invalid frequency.`)
     } else {
-      res.status(200).send({})
-      // TODO: Prepare response
+      response_error_file(res)
     }
   })
 })
