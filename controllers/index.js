@@ -106,7 +106,7 @@ router.post('/response', function (req, res) {
       })
     }
 
-  } else if (obj.action == "read") {
+  } else if (obj.action == "get") {
     if (obj.subject == "frequency") {
 
       callsign = obj.params.callsign
