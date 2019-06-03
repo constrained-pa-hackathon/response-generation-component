@@ -1,4 +1,6 @@
 
+const path = require("path")
+
 const prod_dir = "/home/artium/Downloads/TTS/prod/"
 
 exports.get_sys_err_path = function (cb) {
@@ -11,10 +13,18 @@ exports.get_sound_file_path = function (text, cb) {
 
   var fs = require("fs");
 
-  var data = '(voice_cmu_us_clb_arctic_clunits )'
+  // TODO: Receive voice from UI
+  var voice = "cmu_us_clb_arctic_clunits"
+  
+  // Important: must call vocie BEFORE custom require
+  var data = `(voice_${voice})` 
+  // Notice: path delimiter might not be good for Windows
+  data += `(require "${path.resolve(".")}/custom")`
   data += `(set! utt1 (Utterance Text "${text}"))`
   data += '(utt.synth utt1)'
   data += `(utt.save.wave utt1 "${timestamp}.wav" 'riff)`
+
+  console.log(data)
 
   //data +=
   //  '(utt.save.wave (SayText "' + text + ' ") "' + timestamp + '.wav'+ '" \'riff)';
