@@ -2,7 +2,7 @@
 const prod_dir = "/home/artium/Downloads/TTS/prod/"
 
 exports.get_sys_err_path = function (cb) {
-  cb(prod_dir + "static/system_error.wav")
+  cb(prod_dir + "static/error_in_tts.wav")
 }
 
 exports.get_sound_file_path = function (text, cb) {

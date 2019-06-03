@@ -27,7 +27,11 @@ function response_tts_file(res, text) {
   })
 }
 
-
+/**
+ * Response with a pre recorded error file
+ * saying about text to speech error.
+ * @param {*} res 
+ */
 function response_error_file(res) {
   Festival.get_sys_err_path(function(filepath) {
     res.download(filepath)
@@ -74,5 +78,67 @@ router.post('/read/frequency', function (req, res) {
     }
   })
 })
+
+/**
+ * Generate a response.
+ * 
+ * Currently owr whole business logic is stored here.
+ */
+router.post('/response', function (req, res) {
+  obj = req.body
+
+  resJson = {"text" : "Unknown command."}
+
+  if (obj.action == "set") {
+    if(obj.subject == "frequency") {
+
+      freq = obj.params.freq
+      console.log(freq)
+
+      Ownship.set_freq(freq, function (err, freq) {
+        if (err == null) {
+          resJson = {"text" : `Frequency was set to ${freq}.`}
+        } else if (err == "invalid frequency") {
+          resJson = {"text" : "Bad frequency" }
+        } else {
+          resJson = {"text" : "Simulation model error." }
+        }
+      })
+    }
+
+  } else if (obj.action == "read") {
+    if (obj.subject == "frequency") {
+
+      callsign = obj.params.callsign
+      number = obj.params.number
+
+      Wingmans.get_freq(callsign, number, function (err, obj) {
+        if (err == null) {
+          resJson = {"text" : `Frequency of ${callsign} ${number} is ${obj.freq}.`}
+        } else if (err =="not found") {
+          resJson = {"text" : `No aircraft with call-sign ${callsign} ${number}.`}
+        } else {
+          resJson = {"text" : "Simulation model error." }
+        }
+      })
+    }
+  }
+
+  console.log(resJson)
+  res.set("Content-Type", "application/json");
+  res.set(200);
+  res.send(JSON.stringify(resJson));
+  res.end();
+
+})
+
+/**
+ * Synthesize text into speech
+ */
+router.post('/synth', function (req, res) {
+  text = req.query.text
+  response_tts_file(res, text)
+})
+
 
 module.exports = router
