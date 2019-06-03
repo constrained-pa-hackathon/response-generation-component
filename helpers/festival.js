@@ -12,8 +12,12 @@ exports.get_sound_file_path = function (text, cb) {
   var fs = require("fs");
 
   var data = '(voice_cmu_us_clb_arctic_clunits )'
-  data +=
-    '(utt.save.wave (SayText "' + text + ' ") "' + timestamp + '.wav'+ '" \'riff)';
+  data += `(set! utt1 (Utterance Text "${text}"))`
+  data += '(utt.synth utt1)'
+  data += `(utt.save.wave utt1 "${timestamp}.wav" 'riff)`
+
+  //data +=
+  //  '(utt.save.wave (SayText "' + text + ' ") "' + timestamp + '.wav'+ '" \'riff)';
   
   var scriptFullPath = prod_dir + timestamp + '.scm'
   fs.writeFile(scriptFullPath, data, (err) => {

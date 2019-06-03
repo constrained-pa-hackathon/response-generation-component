@@ -17,11 +17,10 @@ function response_tts_file(res, text) {
     console.log(`Sending file ${filepath}...`)
 
     fs.exists(filepath, function (exists) {
-      if (exists == false) {
-        response_error_file(res)
-      } else {
-
+      if (exists) {
         res.download(filepath);
+      } else {
+        response_error_file(res)
       }
     });
   })
@@ -35,6 +34,7 @@ function response_tts_file(res, text) {
 function response_error_file(res) {
   Festival.get_sys_err_path(function(filepath) {
     res.download(filepath)
+    // TODO: Send 503 if file does not exist
   })
 }
 
