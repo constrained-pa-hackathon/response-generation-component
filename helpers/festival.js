@@ -1,7 +1,7 @@
 
 const path = require("path")
 
-const prod_dir = "/tmp/fest/"
+const prod_dir = "/tmp/"
 
 exports.get_sys_err_path = function (cb) {
   cb(prod_dir + "static/error_in_tts.wav")
