@@ -1,7 +1,7 @@
 
 const path = require("path")
 
-const prod_dir = "/home/artium/Downloads/TTS/prod/"
+const prod_dir = "/tmp/fest/"
 
 exports.get_sys_err_path = function (cb) {
   cb(prod_dir + "static/error_in_tts.wav")
@@ -14,7 +14,7 @@ exports.get_sound_file_path = function (text, cb) {
   var fs = require("fs");
 
   // TODO: Receive voice from UI
-  var voice = "cmu_us_clb_arctic_clunits"
+  var voice = "cmu_us_fem_cg" //"cmu_us_clb_arctic_clunits"
   
   // Important: must call vocie BEFORE custom require
   var data = `(voice_${voice})` 
@@ -35,6 +35,7 @@ exports.get_sound_file_path = function (text, cb) {
     console.log("Created file: " + scriptFullPath);
   });
 
+  // Need to make sure festival is in $PATH
   const
     { spawn } = require('child_process'),
     ls = spawn('festival', ['--batch', timestamp + '.scm'], { cwd: prod_dir });
