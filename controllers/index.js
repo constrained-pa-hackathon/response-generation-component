@@ -90,9 +90,9 @@ router.post('/response', function (req, res) {
   resJson = {"text" : "Unknown command."}
 
   if (obj.action == "set") {
-    if(obj.subject == "frequency") {
+    if(obj.object == "frequency") {
 
-      freq = obj.params.freq
+      freq = obj.value.freq
       console.log(freq)
 
       Ownship.set_freq(freq, function (err, freq) {
@@ -107,10 +107,10 @@ router.post('/response', function (req, res) {
     }
 
   } else if (obj.action == "get") {
-    if (obj.subject == "frequency") {
+    if (obj.object == "frequency") {
 
-      callsign = obj.params.callsign
-      number = obj.params.number
+      callsign = obj.value.callsign
+      number = obj.value.number
 
       Wingmans.get_freq(callsign, number, function (err, obj) {
         if (err == null) {
