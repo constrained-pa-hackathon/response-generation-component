@@ -1,6 +1,6 @@
 
 ac_data = [
-    { callsign: "pirates", number: "1", freq : "330.50" },
+    { callsign: "pirates", number: "1", freq : "330.50"},
     { callsign: "pirates", number: "2", freq : "330.50" },
     { callsign: "armenia", number: "1", freq : "477.00" },
     { callsign: "shodedim", number: "1", freq : "577.00" },

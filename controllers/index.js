@@ -42,8 +42,10 @@ function response_error_file(res) {
 
 router.get('/', function (req, res) {
   ownship.get_freq(function (err, ownship_freq) {
+
+  console.log(tanker.Tanker)
     wingmans.get_all_data(function (err, ac_db) {
-      res.render('index', { ownship_freq: ownship_freq, ac_db: ac_db })
+      res.render('index', { ownship_freq: ownship_freq, ac_db: ac_db ,tanker:tanker.Tanker()})
     })
   })
 })
@@ -106,7 +108,7 @@ router.post('/response', function (req, res) {
             let currTankerData = tanker.getTankerFreq()
 
             if("callsign" in currTankerData && "number" in currTankerData){
-                resJson = {"text": `The tanker is ${currTankerData.callsign} ${currTankerData.number} it's frequency is ${currTankerData.freq}`}
+                resJson = {"text": `The tanker is ${currTankerData.callsign} ${currTankerData.number}. It's frequency is ${currTankerData.freq}.`}
             }
             else{
                 resJson = {"text": `No tanker was set`}

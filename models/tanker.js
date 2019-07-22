@@ -26,9 +26,10 @@ let freq
 
 const setTanker = (netId)=>{
     currTanker = netId
+    console.log(currTanker)
    return `Set the tanker to be ${netId.callsign} ${netId.number}.`
  }
 
-exports.Tanker = currTanker
+exports.Tanker = ()=>{console.log(currTanker);return currTanker}
 exports.getTankerFreq = getTankerFreq
 exports.setTanker = setTanker
