@@ -8,7 +8,7 @@ var fs = require("fs");
 
 
 /**
- * Synthesize text into speech and send the generated file to via response object.
+ * Synthesize text into speech and send the generated file via response object.
  * @param {*} res Response object
  * @param {*} text Text to synthesize
  */
@@ -49,7 +49,7 @@ router.get('/', function (req, res) {
 /********************
  * A P I   P A R T  *
  ********************/
-
+/*
 router.post('/set/frequency', function (req, res) {
   Ownship.set_freq(req.query, function (err, freq) {
     if (err == null) {
@@ -61,23 +61,22 @@ router.post('/set/frequency', function (req, res) {
 
     }
   })
-})
+})*/
 
-router.post('/undo', function (req, res) {
-    Ownship.undo_frequency()
-    let freq = Ownship.ownship_freq
-    response_tts_file(res, `Frequency was set to ${freq}.`)
-})
+//router.post('/undo', function (req, res) {
+//    Ownship.undo_frequency()
+//    let freq = Ownship.ownship_freq
+//    response_tts_file(res, `Frequency was set to ${freq}.`)
+//})
 
 router.post('/read/frequency', function (req, res) {
-
+ 
   callsign = req.query.callsign
-
   Wingmans.get_freq(req.query.callsign, req.query.number, function (err, obj) {
-
-    if (err == null) {
+    if (err === null) { 
       response_tts_file(res, `Frequency of ${req.query.callsign} ${req.query.number} is ${obj.freq}.`)
-    } else if (err =="not found") {
+    } else if (err ==="not found") {
+      
       response_tts_file(res, `No aircraft with call-sign ${req.query.callsign} ${req.query.number}.`)
     } else {
       response_error_file(res)
@@ -85,29 +84,29 @@ router.post('/read/frequency', function (req, res) {
   })
 })
 
+
+
+
+
 /**
  * Generate a response.
  * 
- * Currently owr whole business logic is stored here.
+ * Currently our whole business logic is stored here.
  */
 router.post('/response', function (req, res) {
   obj = req.body
 
   resJson = {"text" : "Unknown command."}
-
+  
   if (obj.action == "set") {
     if(obj.object == "frequency") {
-
-      freq = obj.value.freq
-      console.log(freq)
-
-      Ownship.set_freq(freq, function (err, freq) {
+      query = obj.value
+      Ownship.set_freq(query, function (err, freq) {
         if (err == null) {
           resJson = {"text" : `Frequency was set to ${freq}.`}
-        } else if (err == "invalid frequency") {
-          resJson = {"text" : "Bad frequency" }
-        } else {
-          resJson = {"text" : "Simulation model error." }
+        } else{
+          console.error(err.errMessage)
+          resJson = {"text" : err.errMessage }
         }
       })
     }
@@ -119,15 +118,19 @@ router.post('/response', function (req, res) {
       number = obj.value.number
 
       Wingmans.get_freq(callsign, number, function (err, obj) {
-        if (err == null) {
+        if (err === null) {
           resJson = {"text" : `Frequency of ${callsign} ${number} is ${obj.freq}.`}
-        } else if (err =="not found") {
+        } else if (err ==="not found") {
           resJson = {"text" : `No aircraft with call-sign ${callsign} ${number}.`}
         } else {
           resJson = {"text" : "Simulation model error." }
         }
       })
     }
+  }
+  else if (obj.action === "undo" ){
+    Ownship.undo_frequency()
+    resJson = {"text" : `Frequency was set to ${Ownship.ownship_freq}.`}
   }
 
   console.log(resJson)
@@ -142,6 +145,15 @@ router.post('/response', function (req, res) {
  * Synthesize text into speech
  */
 router.post('/synth', function (req, res) {
+  text = req.query.text
+  response_tts_file(res, text)
+})
+
+
+/**
+ * Synthesize text into speech
+ */
+router.post('/set/tanker', function (req, res) {
   text = req.query.text
   response_tts_file(res, text)
 })

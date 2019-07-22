@@ -8,10 +8,13 @@ exports.ownship_freq = ownship_freq
 
 // Change ownship's frequency
 exports.set_freq = function(obj, cb) {
+  console.log(obj);
+  
   if ('freq' in obj){
-     if (Frequency.is_valid(freq) == false) {
-       console.log("Model: invalid frequency " + freq )
-       cb("invalid frequency", null)
+    let freq = obj.freq
+    var message = {msg: ""}
+     if (!Frequency.is_valid(freq, message)) {
+       cb({errID :"invalid frequency" , errMessage : message.msg}, null)
      } else {
        last_ownship = ownship_freq
        ownship_freq = freq
@@ -20,7 +23,7 @@ exports.set_freq = function(obj, cb) {
      }
   }
   else if('callsign' in obj && 'number' in obj){
-      Wingmans.get_freq(obj['callsign'], obj['number'], function (err, obj) {
+      Wingmans.get_freq(obj.callsign, obj.number, function (err, obj) {
           if(err == null){
             last_ownship = ownship_freq
             ownship_freq = obj.freq

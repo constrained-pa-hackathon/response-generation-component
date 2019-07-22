@@ -33,16 +33,14 @@ exports.get_all_data = function(cb) {
 
 
 exports.get_freq = function(callsign, number, cb) {
-
-  for (var i in ac_data) {
-    it = ac_data[i]
-    if(it.callsign == callsign && it.number == number) {
+  for (let i in ac_data) {
+    let it = ac_data[i]
+    if(it.callsign === callsign && it.number === number) {
       console.log("Model: Freq of " + callsign + " " + number + " is " + it.freq)
       cb(null, {callsign:callsign, number:number, freq:it.freq})
       return
     }
   }
-
   console.log("Model: Not found " + callsign + " " + number)
   cb("not found", {callsign:callsign, number:number})
 }
