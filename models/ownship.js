@@ -8,7 +8,7 @@ exports.ownship_freq = ownship_freq
 
 // Change ownship's frequency
 exports.set_freq = function(obj, cb) {
-  console.log(obj);
+
   
   if ('freq' in obj){
     let freq = obj.freq
@@ -18,6 +18,7 @@ exports.set_freq = function(obj, cb) {
      } else {
        last_ownship = ownship_freq
        ownship_freq = freq
+       console.log(last_ownship + " ---" + ownship_freq)
        console.log("Model: new ownship frequency is " + ownship_freq )
        cb(null, freq)
      }
@@ -38,7 +39,7 @@ exports.undo_frequency = function(){
     let temp_freq = ownship_freq
     ownship_freq = last_ownship
     last_ownship = temp_freq
-    return ownship_freq
+    return last_ownship
 }
 
 // Get ownship's frequency

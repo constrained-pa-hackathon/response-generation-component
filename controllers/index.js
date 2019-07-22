@@ -1,8 +1,10 @@
-var express = require('express')
+const express = require('express')
   , router = express.Router()
-Ownship = require('../models/ownship')
-Wingmans = require('../models/wingmans')
-Festival = require('../helpers/festival')
+ownship = require('../models/ownship')
+wingmans = require('../models/wingmans')
+festival = require('../helpers/festival')
+tanker = require('../models/tanker')
+
 
 var fs = require("fs");
 
@@ -13,7 +15,7 @@ var fs = require("fs");
  * @param {*} text Text to synthesize
  */
 function response_tts_file(res, text) {
-  Festival.get_sound_file_path(text, function (filepath) {
+  festival.get_sound_file_path(text, function (filepath) {
     console.log(`Sending file ${filepath}...`)
 
     fs.exists(filepath, function (exists) {
@@ -32,15 +34,15 @@ function response_tts_file(res, text) {
  * @param {*} res 
  */
 function response_error_file(res) {
-  Festival.get_sys_err_path(function(filepath) {
+  festival.get_sys_err_path(function(filepath) {
     res.download(filepath)
     // TODO: Send 503 if file does not exist
   })
 }
 
 router.get('/', function (req, res) {
-  Ownship.get_freq(function (err, ownship_freq) {
-    Wingmans.get_all_data(function (err, ac_db) {
+  ownship.get_freq(function (err, ownship_freq) {
+    wingmans.get_all_data(function (err, ac_db) {
       res.render('index', { ownship_freq: ownship_freq, ac_db: ac_db })
     })
   })
@@ -49,44 +51,6 @@ router.get('/', function (req, res) {
 /********************
  * A P I   P A R T  *
  ********************/
-/*
-router.post('/set/frequency', function (req, res) {
-  Ownship.set_freq(req.query, function (err, freq) {
-    if (err == null) {
-      response_tts_file(res, `Frequency was set to ${freq}.`)
-    } else if (err == "invalid frequency") {
-      response_tts_file(res, `Invalid frequency.`)
-    } else {
-      response_error_file(res)
-
-    }
-  })
-})*/
-
-//router.post('/undo', function (req, res) {
-//    Ownship.undo_frequency()
-//    let freq = Ownship.ownship_freq
-//    response_tts_file(res, `Frequency was set to ${freq}.`)
-//})
-
-router.post('/read/frequency', function (req, res) {
- 
-  callsign = req.query.callsign
-  Wingmans.get_freq(req.query.callsign, req.query.number, function (err, obj) {
-    if (err === null) { 
-      response_tts_file(res, `Frequency of ${req.query.callsign} ${req.query.number} is ${obj.freq}.`)
-    } else if (err ==="not found") {
-      
-      response_tts_file(res, `No aircraft with call-sign ${req.query.callsign} ${req.query.number}.`)
-    } else {
-      response_error_file(res)
-    }
-  })
-})
-
-
-
-
 
 /**
  * Generate a response.
@@ -97,40 +61,62 @@ router.post('/response', function (req, res) {
   obj = req.body
 
   resJson = {"text" : "Unknown command."}
-  
-  if (obj.action == "set") {
-    if(obj.object == "frequency") {
-      query = obj.value
-      Ownship.set_freq(query, function (err, freq) {
-        if (err == null) {
+  switch(obj.action){
+    case "set":
+      if(obj.object === "frequency") {
+        query = obj.value
+        if( obj.value.callsign === "tanker" && obj.value.number ==="" ){
+        var currTankerData=  tanker.getTankerFreq()
+            obj.value.callsign = currTankerData.callsign
+            obj.value.number = currTankerData.number
+            obj.value.freq = currTankerData.freq
+        }
+        console.log(obj)
+        query = obj.value
+        ownship.set_freq(query, function (err, freq) {
+        if (err === null) {
           resJson = {"text" : `Frequency was set to ${freq}.`}
         } else{
           console.error(err.errMessage)
           resJson = {"text" : err.errMessage }
         }
-      })
-    }
+        })
 
-  } else if (obj.action == "get") {
-    if (obj.object == "frequency") {
+      } else if (obj.object === "tanker"){
 
-      callsign = obj.value.callsign
-      number = obj.value.number
+            resJson = {"text":tanker.setTanker({callsign : obj.value.callsign,
+                              number : obj.value.number})}
+      }
+      break;
+    case "get":
+        if (obj.object === "frequency") {
+            callsign = obj.value.callsign
+            number = obj.value.number
 
-      Wingmans.get_freq(callsign, number, function (err, obj) {
-        if (err === null) {
-          resJson = {"text" : `Frequency of ${callsign} ${number} is ${obj.freq}.`}
-        } else if (err ==="not found") {
-          resJson = {"text" : `No aircraft with call-sign ${callsign} ${number}.`}
-        } else {
-          resJson = {"text" : "Simulation model error." }
+            wingmans.get_freq(callsign, number, function (err, obj) {
+                if (err === null) {
+                    resJson = {"text" : `Frequency of ${callsign} ${number} is ${obj.freq}.`}
+                } else if (err ==="not found") {
+                    resJson = {"text" : `No aircraft with call-sign ${callsign} ${number}.`}
+                } else {
+                    resJson = {"text" : "Simulation model error." }
+                }
+            })
+        }else if (obj.object === "tanker"){
+            let currTankerData = tanker.getTankerFreq()
+
+            if("callsign" in currTankerData && "number" in currTankerData){
+                resJson = {"text": `The tanker is ${currTankerData.callsign} ${currTankerData.number} it's frequency is ${currTankerData.freq}`}
+            }
+            else{
+                resJson = {"text": `No tanker was set`}
+            }
         }
-      })
-    }
-  }
-  else if (obj.action === "undo" ){
-    Ownship.undo_frequency()
-    resJson = {"text" : `Frequency was set to ${Ownship.ownship_freq}.`}
+        break
+    case "undo":
+        freq = ownship.undo_frequency()
+        resJson = {"text" : `Frequency was set to ${freq}.`}
+        break
   }
 
   console.log(resJson)

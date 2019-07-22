@@ -1,30 +1,34 @@
 const frequency = require('../models/ownship')
 const wingmans = require('./wingmans')
 
-var currTanker
+var currTanker = {callsign: "pirates",
+                  number:"1"}
 
 
 
 
 
 const getTankerFreq = ()=>{
+let freq
+      wingmans.get_freq(currTanker.callsign, currTanker.number, function (err, obj) {
 
-   wingmans.get_freq(currTanker.callsign, currTanker.number, function (err, obj) {
-
-    if (err == null) {
-      response_tts_file(res, `Frequency of ${currTanker.callsign} ${currTanker.number} is ${obj.freq}.`)
-    } else if (err =="not found") {
-      response_tts_file(res, `No aircraft with call-sign ${currTanker.callsign} ${currTanker.number}.`)
+    if (err === null) {
+     return  freq =  obj.freq
+    } else if (err ==="not found") {
+      return freq = "not found"
     } else {
-      response_error_file(res)
+      return freq = "someErr"
     }
   })
+  return {callsign:currTanker.callsign, number:currTanker.number,freq: freq}
 }
 
 
 const setTanker = (netId)=>{
     currTanker = netId
-    response_tts_file(res, `Set the tanker to be ${netId.callsign} ${netId.number}.`)
+   return `Set the tanker to be ${netId.callsign} ${netId.number}.`
  }
 
 exports.Tanker = currTanker
+exports.getTankerFreq = getTankerFreq
+exports.setTanker = setTanker
