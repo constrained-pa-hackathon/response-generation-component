@@ -6,13 +6,13 @@ Festival = require('../helpers/festival')
 
 var fs = require("fs");
 
+
 /**
  * Synthesize text into speech and send the generated file to via response object.
  * @param {*} res Response object
  * @param {*} text Text to synthesize
  */
 function response_tts_file(res, text) {
-
   Festival.get_sound_file_path(text, function (filepath) {
     console.log(`Sending file ${filepath}...`)
 
@@ -51,16 +51,22 @@ router.get('/', function (req, res) {
  ********************/
 
 router.post('/set/frequency', function (req, res) {
-
-  Ownship.set_freq(req.query.freq, function (err, freq) {
+  Ownship.set_freq(req.query, function (err, freq) {
     if (err == null) {
       response_tts_file(res, `Frequency was set to ${freq}.`)
     } else if (err == "invalid frequency") {
       response_tts_file(res, `Invalid frequency.`)
     } else {
       response_error_file(res)
+
     }
   })
+})
+
+router.post('/undo', function (req, res) {
+    Ownship.undo_frequency()
+    let freq = Ownship.ownship_freq
+    response_tts_file(res, `Frequency was set to ${freq}.`)
 })
 
 router.post('/read/frequency', function (req, res) {

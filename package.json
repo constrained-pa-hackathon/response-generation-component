@@ -1,11 +1,10 @@
 {
-  "name": "AvionicsSimulation",
+  "name": "avionicssimulation",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "node_modules/.bin/mocha tests/**"
+    "test": "mocha tests/**"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +17,17 @@
   "devDependencies": {
     "mocha": "^6.1.4",
     "should": "^6.0.1"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/constrained-pa-hackathon/response-generation-component.git"
+  },
+  "bugs": {
+    "url": "https://github.com/constrained-pa-hackathon/response-generation-component/issues"
+  },
+  "homepage": "https://github.com/constrained-pa-hackathon/response-generation-component#readme",
+  "description": ""
 }
