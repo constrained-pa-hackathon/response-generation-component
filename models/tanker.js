@@ -33,6 +33,12 @@ const setTanker = (netId)=>{
         currTanker = netId
            isTankerInWingmans = true}}
     }))
+
+
+        console.log("I don't like to program with callbacks")
+        console.log("Add delay")
+        console.log("Add delay")
+
         if(isTankerInWingmans){
          return `Set the tanker to be ${netId.callsign} ${netId.number}.`
         }else{
