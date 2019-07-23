@@ -25,9 +25,20 @@ let freq
 
 
 const setTanker = (netId)=>{
-    currTanker = netId
-    console.log(currTanker)
-   return `Set the tanker to be ${netId.callsign} ${netId.number}.`
+    let isTankerInWingmans = false
+    if(wingmans.get_all_data((err,ac_data)=>{
+        for (let i in ac_data) {
+    let it = ac_data[i]
+    if(it.callsign === netId.callsign && it.number === netId.number) {
+        currTanker = netId
+           isTankerInWingmans = true}}
+    }))
+        if(isTankerInWingmans){
+         return `Set the tanker to be ${netId.callsign} ${netId.number}.`
+        }else{
+         return `err . cant find tanker in wingmans`
+        }
+
  }
 
 exports.Tanker = ()=>{console.log(currTanker);return currTanker}

@@ -39,7 +39,7 @@ exports.undo_frequency = function(){
     let temp_freq = ownship_freq
     ownship_freq = last_ownship
     last_ownship = temp_freq
-    return last_ownship
+    return ownship_freq
 }
 
 // Get ownship's frequency
